@@ -62,14 +62,23 @@ contract Funding is Ownable, ERC1155 {
         uint256 tokenId_,
         uint256 amount_
     ) external onlyPool {
-        if ()
-            _mint(to_, tokenId_, amount_, "");
+		TokenData storage data = tokenList[tokenId_];
+        if (data.tokenMaxSupply >= data.tokenCurrentSupply)
+			revert tokenReachMaxSupply();
+			
+        _mint(to_, tokenId_, amount_, "");
 
         emit TokenMinted(to_, tokenId_, amount_);
     }
 
-    // @notice
-    function totalSupplyById(uint256 tokenId_) external view returns (uint256) {
+    // @notice Get current supply by id
+	// @params tokenId_ Then funding token id
+	// @dev Return token curent supply
+    function totalSupplyById(uint256 tokenId_) 
+		external 
+		view 
+		returns (uint256) 
+	{
         if (tokenList[tokenId_].tokenOwner == address(0x0))
             revert tokenNotExist();
 
@@ -77,8 +86,8 @@ contract Funding is Ownable, ERC1155 {
     }
 
     // @notice Get total token supply by id
-    // @dev Return token supply
     // @param tokenId_ The token id
+    // @dev Return token supply
     function totalMaxSupplyById(uint256 tokenId_)
         external
         view
@@ -93,7 +102,11 @@ contract Funding is Ownable, ERC1155 {
     // @notice Get token ownership
     // @dev Return token owner address
     // @param tokenId_ The token id
-    function tokenOwnerById(uint256 tokenId_) external view returns (address) {
+    function tokenOwnerById(uint256 tokenId_) 
+		external
+		view 
+		returns (address) 
+	{
         if (tokenList[tokenId_].tokenOwner == address(0x0))
             revert tokenNotExist();
 
