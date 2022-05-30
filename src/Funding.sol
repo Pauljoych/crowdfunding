@@ -5,7 +5,7 @@ import "../lib/openzeppelin-contracts/contracts/token/ERC1155/ERC1155.sol";
 import "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 
 /*
-* @author pauljoych.io
+* @author @pauljoych
 * @title Funding token for Kullolabs
 */
 
@@ -15,6 +15,7 @@ struct TokenData {
 }
 
 contract Funding is Ownable, ERC1155 {
+	// @notice event for frontend usage
 	event TokenCreated(address owner, uint256 tokenId, uint256 tokenSupply);
 
 	uint256 private tokenId;
@@ -24,6 +25,9 @@ contract Funding is Ownable, ERC1155 {
 		tokenId = 0;
 	}
 
+	// @notice For creting token, identifier by current tokenId
+	// @dev tokeniId is auto index 
+	// @param tokenSupply The init token supply limit
 	function createToken(uint tokenSupply) external {
 		tokenList[tokenId].tokenOwner = msg.sender;
 		tokenList[tokenId].tokenSupply = tokenSupply;
