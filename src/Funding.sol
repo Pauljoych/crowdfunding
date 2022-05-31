@@ -12,15 +12,15 @@ import "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 
 error tokenNotExist();
 error tokenReachMaxSupply();
-
 contract Funding is Ownable, ERC1155 {
-    event TokenCreated(address owner, uint256 tokenId, uint256 tokenMaxSupply);
     event TokenMinted(address to, uint256 tokenId, uint256 amount);
+    event TokenCreated(address owner, uint256 tokenId, uint256 tokenMaxSupply);
 
     struct TokenData {
         address tokenOwner;
         uint256 tokenMaxSupply;
         uint256 tokenCurrentSupply;
+		uint256 tokenPrice;
     }
 
     // @notice Token pool address
@@ -35,16 +35,43 @@ contract Funding is Ownable, ERC1155 {
     }
 
     modifier onlyPool() {
-        require(fundingPool == tx.origin, "caller is not the pool");
+        require(fundingPool == tx.origin, "not the pool");
         _;
     }
 
+    modifier onlyTokenOwner(tokenId) {
+        require(tokenList[tokenId].tokenOwner == msg.sender, "not the owner");
+		_;
+	}
+	
+	// @notice Setter for funding pool addreas
+	// @param fundingPool_ The new pool address
+	// @dev Only owner can call the function
+	function setPool(address fundingPool_) external onlyOwner {
+		fundingPool =  fundingPool_;
+	}
+
+	// @notice Setter for token ipo price
+	// @param tokenId_ The token id
+	// @param tokenPrice_ The init price for ipo
+	// @dev Only token owner can call the fuction
+	function setTokenPrice(uint256 tokenId_, uint256 tokenPrice_) 
+		external 
+		onlyTokenOwner(tokenId_) 
+	{
+		tokenList[tokenId].tokenPrice = tokenPrice_;	
+	}
+
     // @notice Create funding token identifier by current tokenId
+    // @param tokenSupply_ The total supply limit
+	// @param tokenPrice_ The init price for ipo
     // @dev tokeniId is auto index
-    // @param tokenSupply_ total supply limit
-    function createToken(uint256 tokenMaxSupply_) external {
+    function createToken(uint256 tokenMaxSupply_, uint256 tokenPrice_) 
+		external 
+	{
         tokenList[tokenId].tokenOwner = msg.sender;
         tokenList[tokenId].tokenMaxSupply = tokenMaxSupply_;
+		tokenList[tokenId].tokenPrice = tokenPrice;
         tokenList[tokenId].tokenCurrentSupply = 0;
 
         emit TokenCreated(msg.sender, tokenId, tokenMaxSupply_);
@@ -70,6 +97,20 @@ contract Funding is Ownable, ERC1155 {
 
         emit TokenMinted(to_, tokenId_, amount_);
     }
+
+	// @notice Get token ipo price
+	// @params tokenId_ The token id
+	// @dev Return token ipo price
+	function getTokenPriceById(uint256 tokenId_) 
+		external
+		view
+		returns (uint256)
+	{
+        if (tokenList[tokenId_].tokenOwner == address(0x0))
+			revert tokenNotExist();
+
+		return tokenList[tokenId_].tokenPrice;
+	}
 
     // @notice Get current supply by id
 	// @params tokenId_ Then funding token id
