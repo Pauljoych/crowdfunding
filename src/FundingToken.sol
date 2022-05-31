@@ -42,7 +42,10 @@ contract FundingToken is Ownable, ERC1155 {
 
     // @param fundingPool_ The new pool address
     // @dev Only owner can call the function
-    function setPool(address fundingPool_) external onlyOwner {
+    function setPool(address fundingPool_) 
+		external 
+		onlyOwner 
+	{
         fundingPool = fundingPool_;
     }
 
@@ -50,7 +53,9 @@ contract FundingToken is Ownable, ERC1155 {
     // @param tokenId_ The token id
     // @param tokenPrice_ The init price for ipo
     // @dev Only token owner can call the fuction
-    function setTokenPrice(uint256 tokenId_, uint256 tokenPrice_) external {
+    function setTokenPrice(uint256 tokenId_, uint256 tokenPrice_) 
+		external 
+	{
         if (tokenList[tokenId_].tokenOwner != msg.sender)
             revert tokenOwnerOnly();
         tokenList[tokenId].tokenPrice = tokenPrice_;
@@ -78,11 +83,10 @@ contract FundingToken is Ownable, ERC1155 {
     // @param tokenId_ The token id
     // @param amout_ The token amount
     // @dev Only pool can use it
-    function mintTokenById(
-        address to_,
-        uint256 tokenId_,
-        uint256 amount_
-    ) external onlyPool {
+    function mintTokenById(address to_, uint256 tokenId_, uint256 amount_) 
+		external 
+		onlyPool 
+	{
         TokenData storage data = tokenList[tokenId_];
         if (data.tokenMaxSupply >= data.tokenCurrentSupply)
             revert tokenReachMaxSupply();
@@ -109,7 +113,11 @@ contract FundingToken is Ownable, ERC1155 {
     // @notice Get current supply by id
     // @params tokenId_ Then funding token id
     // @dev Return token curent supply
-    function totalSupplyById(uint256 tokenId_) external view returns (uint256) {
+    function totalSupplyById(uint256 tokenId_)
+		external 
+		view 
+		returns (uint256) 
+	{
         if (tokenList[tokenId_].tokenOwner == address(0x0))
             revert tokenNotExist();
 
@@ -133,7 +141,11 @@ contract FundingToken is Ownable, ERC1155 {
     // @notice Get token ownership
     // @dev Return token owner address
     // @param tokenId_ The token id
-    function tokenOwnerById(uint256 tokenId_) external view returns (address) {
+    function tokenOwnerById(uint256 tokenId_)
+		external
+		view
+		returns (address) 
+	{
         if (tokenList[tokenId_].tokenOwner == address(0x0))
             revert tokenNotExist();
 
