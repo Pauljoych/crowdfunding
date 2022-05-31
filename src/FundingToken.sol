@@ -90,7 +90,7 @@ contract FundingToken is Ownable, ERC1155 {
 			
         _mint(to_, tokenId_, amount_, "");
 
-        emit TokenMinted(to_, tokenId_, amount_);
+		emit TokenMinted(to_, tokenId_, amount_);
     }
 
 	// @notice Get token ipo price
