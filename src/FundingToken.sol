@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import "./FundingPool.sol";
 import "../lib/openzeppelin-contracts/contracts/token/ERC1155/ERC1155.sol";
 import "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 
@@ -10,9 +9,10 @@ import "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
  * @title Funding token for Kullolabs
  */
 
+error tokenOwnerOnly();
 error tokenNotExist();
 error tokenReachMaxSupply();
-contract Funding is Ownable, ERC1155 {
+contract FundingToken is Ownable, ERC1155 {
     event TokenMinted(address to, uint256 tokenId, uint256 amount);
     event TokenCreated(address owner, uint256 tokenId, uint256 tokenMaxSupply);
 
@@ -39,12 +39,6 @@ contract Funding is Ownable, ERC1155 {
         _;
     }
 
-    modifier onlyTokenOwner(tokenId) {
-        require(tokenList[tokenId].tokenOwner == msg.sender, "not the owner");
-		_;
-	}
-	
-	// @notice Setter for funding pool addreas
 	// @param fundingPool_ The new pool address
 	// @dev Only owner can call the function
 	function setPool(address fundingPool_) external onlyOwner {
@@ -57,8 +51,9 @@ contract Funding is Ownable, ERC1155 {
 	// @dev Only token owner can call the fuction
 	function setTokenPrice(uint256 tokenId_, uint256 tokenPrice_) 
 		external 
-		onlyTokenOwner(tokenId_) 
 	{
+		if (tokenList[tokenId_].tokenOwner != msg.sender)
+			revert tokenOwnerOnly();
 		tokenList[tokenId].tokenPrice = tokenPrice_;	
 	}
 
@@ -71,7 +66,7 @@ contract Funding is Ownable, ERC1155 {
 	{
         tokenList[tokenId].tokenOwner = msg.sender;
         tokenList[tokenId].tokenMaxSupply = tokenMaxSupply_;
-		tokenList[tokenId].tokenPrice = tokenPrice;
+		tokenList[tokenId].tokenPrice = tokenPrice_;
         tokenList[tokenId].tokenCurrentSupply = 0;
 
         emit TokenCreated(msg.sender, tokenId, tokenMaxSupply_);
