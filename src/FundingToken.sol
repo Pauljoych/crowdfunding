@@ -36,7 +36,7 @@ contract FundingToken is Ownable, ERC1155 {
     }
 
     modifier onlyPool() {
-        require(fundingPool == tx.origin, "not the pool");
+        require(fundingPool == msg.sender, "not the pool");
         _;
     }
 
@@ -88,7 +88,7 @@ contract FundingToken is Ownable, ERC1155 {
 		onlyPool 
 	{
         TokenData storage data = tokenList[tokenId_];
-        if (data.tokenMaxSupply >= data.tokenCurrentSupply)
+        if (data.tokenMaxSupply < data.tokenCurrentSupply + amount_)
             revert tokenReachMaxSupply();
 
         _mint(to_, tokenId_, amount_, "");
@@ -99,7 +99,7 @@ contract FundingToken is Ownable, ERC1155 {
     // @notice Get token ipo price
     // @params tokenId_ The token id
     // @dev Return token ipo price
-    function getTokenPriceById(uint256 tokenId_)
+    function tokenPriceById(uint256 tokenId_)
         external
         view
         returns (uint256)
