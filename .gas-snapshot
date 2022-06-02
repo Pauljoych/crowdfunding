@@ -1,1 +1,2 @@
-TestContract:testBar() (gas: 401)
+FundingTokenTest:test_createToken() (gas: 100039)
+FundingTokenTest:test_mintToken() (gas: 135847)
