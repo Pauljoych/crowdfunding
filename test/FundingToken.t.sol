@@ -12,7 +12,6 @@ contract FundingTokenTest is Test, ERC1155Receiver, ERC1155Holder {
 
     function setUp() public {
         c = new FundingToken(0);
-		c.setPool(address(this));
     }
 	
 	function test_createToken() public {
@@ -25,5 +24,14 @@ contract FundingTokenTest is Test, ERC1155Receiver, ERC1155Holder {
 		c.createToken(1000, 1);
 		c.mintTokenById(address(this), 0, 1000);
 		assertEq(c.balanceOf(address(this), 0), 1000);
+	}
+
+	function test_mintFromInvalidPool() public {
+		c.setPool(address(this));
+		
+		vm.startPrank(address(0x0));
+
+		c.createToken(1000, 1);
+		c.mintTokenById(address(this), 0, 1000);
 	}
 }
