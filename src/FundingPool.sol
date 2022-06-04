@@ -10,6 +10,7 @@ contract FundingPool {
         fundingToken = fundingToken_;
     }
 
-    // @notice User can contribute to funding token
-    function contributeToToken(uint256 tokenId_) external {}
+	function contibuteToToken(uint256 tokenId_) external {
+
+	}	
 }
